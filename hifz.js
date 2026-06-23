@@ -33,6 +33,14 @@ function jadwalHifz(interval, streak, rating, dayUntil, cardUnit, currentSemeste
     }
   }
 
+  if (rating === "good" && result > 90) {
+    result = 90;
+  }
+
+  if (rating === "easy" && result > 180) {
+    result = 180;
+  }
+
   if (cardUnit <= currentSemester && dayUntil <= 14) {
     if (currentSemester === 1 || currentSemester === 2) {
       if (result > 5) {

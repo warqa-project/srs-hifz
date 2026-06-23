@@ -1,4 +1,17 @@
-function nextInterval(interval, streak, rating, dayUntil, cardUnit, currentSemester) {
+// an srs algorithm to help bac students memorize terminologies even better!
+// the algorithm has 6 parameters to keep in mind
+// 
+// Parameter        | Type    | Description
+// -----------------|---------|--------------------------------------------
+// interval         | number  | days since last review (0 for new cards)
+// streak           | number  | consecutive correct answers without "again"
+// rating           | string  | student response: "again", "good", "easy"
+// daysUntil        | number  | days until the next exam
+// cardUnit         | number  | unit the term belongs to (1, 2, or 3)
+// currentSemester  | number  | current exam (1, 2, 3, or 4 for BAC)
+
+
+function jadwalHifz(interval, streak, rating, dayUntil, cardUnit, currentSemester) {
   let result = 0;
   if (rating === "again") {
     result = 1;
@@ -33,3 +46,5 @@ function nextInterval(interval, streak, rating, dayUntil, cardUnit, currentSemes
   }
   return result;
 }
+
+module.exports = {jadwalHifz};

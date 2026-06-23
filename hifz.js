@@ -1,26 +1,35 @@
 function nextInterval(interval, streak, rating, dayUntil, cardUnit, currentSemester) {
+  let result = 0;
   if (rating === "again") {
-    return 1;
+    result = 1;
   } else if (rating === "good") {
     if (streak === 0) {
-      return 1;
+      result = 1;
     } else if (streak === 1) {
-      return 3;
+      result = 3;
     } else {
-      return interval*2;
+      result = interval*2;
     }
   } else if (rating === "easy") {
     if (streak === 0) {
-      return 2;
+      result = 2;
     } else if (streak === 1) {
-      return 6;
+      result = 6;
     } else {
-      return interval*3;
+      result = interval*3;
+    }
+  }
+  return result;
+
+  if (cardUnit <= currentSemester && dayUntil <= 14) {
+    if (currentSemester === 1 || currentSemester === 2) {
+      if (result > 5) {
+        result = 5;
+      }
+    } else if (currentSemester === 3 || currentSemester === 4) {
+      if (result > 3) {
+        result = 3;
+      }
     }
   }
 }
-
-console.log(nextInterval(0, 0, "good", 60, 1, 1));
-console.log(nextInterval(1, 1, "good", 60, 1, 1));
-console.log(nextInterval(3, 2, "easy", 60, 1, 1));
-console.log(nextInterval(9, 3, "again", 60, 1, 1));

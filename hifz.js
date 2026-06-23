@@ -19,7 +19,6 @@ function nextInterval(interval, streak, rating, dayUntil, cardUnit, currentSemes
       result = interval*3;
     }
   }
-  return result;
 
   if (cardUnit <= currentSemester && dayUntil <= 14) {
     if (currentSemester === 1 || currentSemester === 2) {
@@ -32,4 +31,5 @@ function nextInterval(interval, streak, rating, dayUntil, cardUnit, currentSemes
       }
     }
   }
+  return result;
 }

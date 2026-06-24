@@ -1,10 +1,12 @@
 const { jadwalHifz } = require("./hifz");
 
-function reviewCard(card, rating, dayUntil, currentSemester) {
+function reviewCard(card, rating, dayUntil, currentSemester, todayDate) {
 
   let newInterval = jadwalHifz(card.interval, card.streak, rating, dayUntil, card.cardUnit, currentSemester);
 
   card.interval = newInterval;
+  card.dueDate = new Date(todayDate);
+  card.dueDate.setDate(card.dueDate.getDate() + newInterval);
 
   if (rating === "again" && dayUntil <= 14 ) {
     

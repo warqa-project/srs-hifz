@@ -3,13 +3,11 @@
 A lightweight spaced repetition algorithm built for Algerian BAC students.
 Part of the [Warqa Project](https://github.com/warqa-project).
 
----
 
 ## What is it?
 
 A simple algorithm that decides when a student should review a term based on their past performance and how close the exam is.
 
----
 
 ## Core function
 
@@ -28,7 +26,6 @@ jadwalHifz(interval, streak, rating, daysUntil, cardUnit, currentSemester)
 
 Returns the next review interval in days.
 
----
 
 ## Algorithm
 
@@ -48,7 +45,6 @@ When the exam is within 14 days and the card unit is in scope:
 
 Hitting `again` near the exam does **not** reset the streak.
 
----
 
 ## Usage
 

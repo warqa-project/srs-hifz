@@ -3,13 +3,11 @@
 خوارزمية مراجعة متباعدة خفيفة الوزن مصممة لطلاب البكالوريا الجزائريين.
 جزء من [مشروع ورقة](https://github.com/warqa-project).
 
----
 
 ## ما هي؟
 
 خوارزمية بسيطة تحدد متى يجب على الطالب مراجعة مصطلح معين بناءً على أدائه السابق والوقت المتبقي حتى الامتحان.
 
----
 
 ## الدالة الرئيسية
 
@@ -28,7 +26,6 @@ jadwalHifz(interval, streak, rating, daysUntil, cardUnit, currentSemester)
 
 تُرجع عدد أيام المراجعة التالية.
 
----
 
 ## منطق الخوارزمية
 
@@ -48,7 +45,6 @@ jadwalHifz(interval, streak, rating, daysUntil, cardUnit, currentSemester)
 
 الضغط على `again` قرب الامتحان **لا يُعيد** تصفير الـ streak.
 
----
 
 ## الاستخدام
 

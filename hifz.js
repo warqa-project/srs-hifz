@@ -52,6 +52,7 @@ function jadwalHifz(interval, streak, rating, dayUntil, cardUnit, currentSemeste
       }
     }
   }
+  result = Math.round(result)
   return result;
 }
 

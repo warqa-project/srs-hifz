@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ورقة — تجربة كاملة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* Evergarden Winter (dark) */
+    :root {
+      --base:    #1e2528;
+      --mantle:  #191e21;
+      --crust:   #171c1f;
+      --surface0:#262f33;
+      --surface1:#374145;
+      --surface2:#4a585c;
+      --overlay0:#58686d;
+      --overlay1:#6f8788;
+      --overlay2:#839e9a;
+      --subtext0:#96b4aa;
+      --subtext1:#adc9bc;
+      --text:    #f8f9e8;
+      --green:   #cbe3b3;
+      --red:     #f57f82;
+      --yellow:  #f5d098;
+      --blue:    #b2caed;
+      --purple:  #d2bdf3;
+      --aqua:    #b3e3ca;
+      --pink:    #f3c0e5;
+      --orange:  #f7a182;
+      /* aliases for existing code */
+      --surface: var(--surface0);
+      --overlay: var(--overlay0);
+      --subtext: var(--subtext0);
+      --mauve:   var(--green);
+      --peach:   var(--orange);
+      --teal:    var(--aqua);
+    }
+
+    /* Evergarden Summer (light) */
+    :root[data-theme="summer"] {
+      --base:    #f5efe6;
+      --mantle:  #f2eae1;
+      --crust:   #e8ded5;
+      --surface0:#ede8dd;
+      --surface1:#e6e1d3;
+      --surface2:#ceccbd;
+      --overlay0:#acb5a4;
+      --overlay1:#829084;
+      --overlay2:#707d76;
+      --subtext0:#576869;
+      --subtext1:#455355;
+      --text:    #2b3034;
+      --green:   #91a77a;
+      --red:     #c58687;
+      --yellow:  #c4aa80;
+      --blue:    #8294ad;
+      --purple:  #a897b8;
+      --aqua:    #74a48b;
+      --pink:    #c499b8;
+      --orange:  #c69883;
+      --surface: var(--surface0);
+      --overlay: var(--overlay0);
+      --subtext: var(--subtext0);
+      --mauve:   var(--green);
+      --peach:   var(--orange);
+      --teal:    var(--aqua);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--base);
+      color: var(--text);
+      font-family: 'Tajawal', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Screens ── */
+    .screen { display: none; flex-direction: column; align-items: center; padding: 2rem 1rem; gap: 1.25rem; min-height: 100vh; }
+    .screen.active { display: flex; }
+
+    /* ── Setup screen ── */
+    .setup-card {
+      background: rgba(38,47,51,0.5);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--overlay);
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .setup-card h2 {
+      font-size: 1.1rem;
+      color: var(--mauve);
+      border-bottom: 1px solid var(--overlay);
+      padding-bottom: 0.75rem;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .field label { font-size: 0.8rem; color: var(--subtext); }
+
+    .field input[type=date], .field input[type=text] {
+      background: var(--mantle);
+      border: 1px solid var(--overlay);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 0.95rem;
+      padding: 0.6rem 0.9rem;
+      outline: none;
+      width: 100%;
+    }
+
+    .field input:focus { border-color: var(--mauve); }
+
+    .exam-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .exam-item { display: flex; flex-direction: column; gap: 0.3rem; }
+    .exam-item label { font-size: 0.75rem; color: var(--subtext); }
+
+    .exam-item input[type=date] {
+      background: var(--mantle);
+      border: 1px solid var(--overlay);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 0.85rem;
+      padding: 0.5rem 0.7rem;
+      outline: none;
+      width: 100%;
+    }
+
+    .exam-item input:focus { border-color: var(--mauve); }
+
+    .btn-start {
+      padding: 0.85rem;
+      background: rgba(203,166,247,0.15);
+      color: var(--mauve);
+      border: 1px solid rgba(203,166,247,0.35);
+      border-radius: 12px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s;
+      width: 100%;
+    }
+
+    .btn-start:hover { transform: translateY(-1px); }
+
+    /* ── Timeline ── */
+    .timeline {
+      width: 100%;
+      max-width: 580px;
+      background: rgba(24,24,37,0.6);
+      border: 1px solid var(--overlay);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .timeline-title { font-size: 0.75rem; color: var(--subtext); margin-bottom: 0.25rem; }
+
+    .timeline-bar {
+      position: relative;
+      height: 6px;
+      background: var(--overlay);
+      border-radius: 3px;
+      margin: 0.75rem 0 1.5rem;
+    }
+
+    .timeline-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+      transition: width 0.3s;
+    }
+
+    .timeline-marker {
+      position: absolute;
+      top: -4px;
+      transform: translateX(-50%);
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--base);
+    }
+
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--subtext);
+      margin-top: -1rem;
+    }
+
+    .exam-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+    .exam-chip {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      border: 1px solid;
+    }
+
+    .chip-far      { background: rgba(166,227,161,0.1); color: var(--green);  border-color: rgba(166,227,161,0.25); }
+    .chip-soon     { background: rgba(249,226,175,0.1); color: var(--yellow); border-color: rgba(249,226,175,0.25); }
+    .chip-critical { background: rgba(243,139,168,0.1); color: var(--red);    border-color: rgba(243,139,168,0.25); }
+    .chip-past     { background: rgba(69,71,90,0.3);    color: var(--overlay); border-color: var(--overlay); text-decoration: line-through; }
+
+    /* ── Review screen ── */
+    header { text-align: center; }
+    header h1 { font-size: 1.8rem; font-weight: 900; color: var(--mauve); }
+    header p  { color: var(--subtext); font-size: 0.85rem; }
+
+    .pressure-bar {
+      width: 100%; max-width: 600px;
+      padding: 0.55rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .pressure-none     { background: rgba(166,227,161,0.08); color: var(--green);  border: 1px solid rgba(166,227,161,0.2); }
+    .pressure-semester { background: rgba(249,226,175,0.08); color: var(--yellow); border: 1px solid rgba(249,226,175,0.2); }
+    .pressure-bac      { background: rgba(243,139,168,0.08); color: var(--red);    border: 1px solid rgba(243,139,168,0.2); }
+    .pressure-out      { background: rgba(69,71,90,0.2);     color: var(--overlay); border: 1px solid var(--overlay); }
+
+    .stats { display: flex; gap: 1.5rem; font-size: 0.82rem; color: var(--subtext); }
+    .stats span { color: var(--text); font-weight: 600; }
+
+    .queue-dots { display: flex; gap: 0.35rem; flex-wrap: wrap; justify-content: center; max-width: 600px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--overlay); transition: background 0.3s; }
+    .dot.current  { background: var(--mauve); }
+    .dot.done     { background: var(--green); }
+    .dot.requeued { background: var(--red); }
+
+    .card-wrap {
+      perspective: 1000px;
+      width: 100%; max-width: 600px;
+      height: 260px;
+      cursor: pointer;
+    }
+
+    .card {
+      width: 100%; height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .card.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute; inset: 0;
+      border-radius: 20px;
+      backface-visibility: hidden;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2rem; gap: 0.75rem;
+      background: rgba(49,50,68,0.55);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(203,227,179,0.18);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+      text-align: center;
+    }
+
+    .card-back { transform: rotateY(180deg); }
+
+    .card-label { font-size: 0.7rem; color: var(--mauve); text-transform: uppercase; letter-spacing: 0.12em; }
+    .card-term  { font-size: 2rem; font-weight: 700; line-height: 1.3; }
+    .card-definition { font-size: 0.95rem; color: var(--subtext); line-height: 1.75; }
+    .card-meta  { font-size: 0.72rem; color: var(--overlay); }
+    .card-streak { font-size: 0.75rem; color: var(--peach); }
+    .flip-hint  { font-size: 0.75rem; color: var(--overlay); margin-top: 0.5rem; }
+
+    .ratings {
+      display: flex; gap: 0.75rem;
+      width: 100%; max-width: 600px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .ratings.visible { opacity: 1; pointer-events: all; }
+
+    .btn {
+      flex: 1; padding: 0.8rem 0.5rem;
+      border: none; border-radius: 12px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 0.9rem; font-weight: 500;
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.2rem;
+      transition: transform 0.15s;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn small { font-size: 0.68rem; opacity: 0.65; }
+
+    .btn-again { background: rgba(243,139,168,0.12); color: var(--red);    border: 1px solid rgba(243,139,168,0.28); }
+    .btn-good  { background: rgba(249,226,175,0.12); color: var(--yellow); border: 1px solid rgba(249,226,175,0.28); }
+    .btn-easy  { background: rgba(166,227,161,0.12); color: var(--green);  border: 1px solid rgba(166,227,161,0.28); }
+
+    .done {
+      display: none; flex-direction: column;
+      align-items: center; gap: 0.75rem;
+      text-align: center; padding: 2rem;
+      background: rgba(38,47,51,0.5);
+      border: 1px solid var(--overlay);
+      border-radius: 20px;
+      width: 100%; max-width: 600px;
+    }
+
+    .done h2 { font-size: 1.6rem; color: var(--green); }
+    .done p  { color: var(--subtext); font-size: 0.9rem; }
+
+    .summary-chips { display: flex; gap: 1rem; margin-top: 0.5rem; }
+    .s-chip { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+    .s-chip-again { background: rgba(243,139,168,0.15); color: var(--red); }
+    .s-chip-good  { background: rgba(249,226,175,0.15); color: var(--yellow); }
+    .s-chip-easy  { background: rgba(166,227,161,0.15); color: var(--green); }
+
+    .action-btns { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+
+    .btn-restart, .btn-setup {
+      padding: 0.65rem 1.5rem;
+      border-radius: 12px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 0.9rem; cursor: pointer;
+    }
+
+    .btn-restart { background: rgba(203,166,247,0.12); color: var(--mauve); border: 1px solid rgba(203,166,247,0.3); }
+    .btn-setup   { background: rgba(137,180,250,0.12); color: var(--blue);  border: 1px solid rgba(137,180,250,0.3); }
+
+    .log {
+      width: 100%; max-width: 600px;
+      background: rgba(24,24,37,0.5);
+      border: 1px solid var(--overlay);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-size: 0.78rem; color: var(--subtext);
+      max-height: 130px; overflow-y: auto;
+    }
+
+    .log-entry { padding: 0.2rem 0; border-bottom: 1px solid rgba(69,71,90,0.3); }
+    .log-entry:last-child { border-bottom: none; }
+    .again { color: var(--red); }
+    .good  { color: var(--yellow); }
+    .easy  { color: var(--green); }
+  </style>
+</head>
+<body>
+
+<!-- ══ SETUP SCREEN ══════════════════════════════════════════════════════════ -->
+<div class="screen active" id="setupScreen">
+
+  <header>
+    <h1>ورقة</h1>
+    <p>اضبط التواريخ وابدأ المراجعة</p>
+  </header>
+
+  <div class="setup-card">
+    <h2>📅 تاريخ اليوم (للتجربة)</h2>
+    <div class="field">
+      <label>غيّر التاريخ لمحاكاة أي يوم في السنة الدراسية</label>
+      <input type="date" id="todayInput" />
+    </div>
+  </div>
+
+  <div class="setup-card">
+    <h2>🗓 تواريخ الامتحانات</h2>
+    <div class="exam-grid">
+      <div class="exam-item">
+        <label>امتحان الفصل 1</label>
+        <input type="date" id="exam1" />
+      </div>
+      <div class="exam-item">
+        <label>امتحان الفصل 2</label>
+        <input type="date" id="exam2" />
+      </div>
+      <div class="exam-item">
+        <label>امتحان الفصل 3</label>
+        <input type="date" id="exam3" />
+      </div>
+      <div class="exam-item">
+        <label>امتحان BAC 🎓</label>
+        <input type="date" id="examBac" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline preview -->
+  <div class="timeline" id="timeline" style="display:none">
+    <div class="timeline-title">الوضع الحالي بناءً على التواريخ</div>
+    <div class="exam-chips" id="examChips"></div>
+  </div>
+
+  <div style="width:100%;max-width:580px">
+    <button class="btn-start" onclick="startReview()">ابدأ المراجعة ←</button>
+  </div>
+
+</div>
+
+<!-- ══ REVIEW SCREEN ═════════════════════════════════════════════════════════ -->
+<div class="screen" id="reviewScreen">
+
+  <header>
+    <h1>ورقة</h1>
+    <p id="dateDisplay">—</p>
+  </header>
+
+  <div class="pressure-bar" id="pressureBar">—</div>
+
+  <div class="stats">
+    بطاقة <span id="queuePos">1</span> / <span id="queueTotal">5</span>
+    &nbsp;·&nbsp;
+    متبقٍ: <span id="remaining">5</span>
+  </div>
+
+  <div class="queue-dots" id="queueDots"></div>
+
+  <div class="card-wrap" id="cardWrap" onclick="flipCard()">
+    <div class="card" id="card">
+      <div class="card-face card-front">
+        <div class="card-label">المصطلح</div>
+        <div class="card-term" id="term">—</div>
+        <div class="card-meta" id="chapterDisplay">—</div>
+        <div class="card-streak" id="streakDisplay"></div>
+        <div class="flip-hint">انقر للكشف</div>
+      </div>
+      <div class="card-face card-back">
+        <div class="card-label">التعريف</div>
+        <div class="card-definition" id="definition">—</div>
+        <div class="card-meta" id="unitDisplay"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ratings" id="ratings">
+    <button class="btn btn-again" onclick="rate('again')">
+      مجدداً
+      <small>في الجلسة</small>
+    </button>
+    <button class="btn btn-good" onclick="rate('good')">
+      جيد
+      <small id="good-days">—</small>
+    </button>
+    <button class="btn btn-easy" onclick="rate('easy')">
+      سهل
+      <small id="easy-days">—</small>
+    </button>
+  </div>
+
+  <div class="done" id="done">
+    <h2>أحسنت! 🎉</h2>
+    <p>انتهت جلسة المراجعة</p>
+    <div class="summary-chips">
+      <div class="s-chip s-chip-again" id="chip-again">مجدداً: 0</div>
+      <div class="s-chip s-chip-good"  id="chip-good">جيد: 0</div>
+      <div class="s-chip s-chip-easy"  id="chip-easy">سهل: 0</div>
+    </div>
+    <p id="retention-text" style="color:var(--blue);margin-top:0.5rem"></p>
+    <div class="action-btns">
+      <button class="btn-restart" onclick="restart()">مراجعة مجدداً</button>
+  <button class="btn-restart" style="background:rgba(243,139,168,0.1);color:var(--red);border-color:rgba(243,139,168,0.3);margin-top:-0.25rem;font-size:0.8rem" onclick="if(confirm('هل تريد حذف كل التقدم؟')) resetCardStates()">إعادة ضبط كل البطاقات</button>
+      <button class="btn-setup"   onclick="goSetup()">تغيير التاريخ</button>
+    </div>
+  </div>
+
+  <div class="log" id="log"></div>
+
+</div>
+
+<script>
+// ═══ srs-hifz algorithm ══════════════════════════════════════════════════════
+
+function jadwalHifz(interval, streak, rating, daysUntil, cardUnit, currentSemester) {
+  let result = 0;
+
+  if (rating === "again") {
+    result = 0.1; // requeue in session
+  } else if (rating === "good") {
+    if (streak === 0)      result = 1;
+    else if (streak === 1) result = 3;
+    else                   result = interval * 2;
+  } else if (rating === "easy") {
+    if (streak === 0)      result = 2;
+    else if (streak === 1) result = 6;
+    else                   result = interval * 3;
+  }
+
+  if (rating === "good" && result > 90)  result = 90;
+  if (rating === "easy" && result > 180) result = 180;
+
+  if (cardUnit <= currentSemester && daysUntil <= 14) {
+    if (currentSemester === 1 || currentSemester === 2) {
+      if (result > 5) result = 5;
+    } else if (currentSemester === 3 || currentSemester === 4) {
+      if (result > 3) result = 3;
+    }
+  }
+
+  return Math.round(result);
+}
+
+function reviewCard(card, rating, daysUntil, currentSemester, todayDate) {
+  let newInterval = jadwalHifz(card.interval, card.streak, rating, daysUntil, card.cardUnit, currentSemester);
+
+  if (rating === "again") {
+    // don't touch interval or dueDate — requeue in session
+    if (daysUntil <= 14) {
+      // near exam — keep streak
+    } else {
+      card.streak = 0;
+    }
+  } else {
+    // good or easy — update everything
+    card.interval = newInterval;
+    let d = new Date(todayDate);
+    d.setDate(d.getDate() + newInterval);
+    card.dueDate = d.toISOString();
+    card.streak = card.streak + 1;
+  }
+
+  return card;
+}
+
+// ═══ Exam date logic ══════════════════════════════════════════════════════════
+
+function daysBetween(dateA, dateB) {
+  return Math.round((dateB - dateA) / (1000 * 60 * 60 * 24));
+}
+
+function detectSemesterAndDays(today, examDates) {
+  // examDates: { s1, s2, s3, bac } as Date objects (or null)
+  // Find the next upcoming exam and how many days away it is
+  const exams = [
+    { label: "الفصل 1", sem: 1, date: examDates.s1 },
+    { label: "الفصل 2", sem: 2, date: examDates.s2 },
+    { label: "الفصل 3", sem: 3, date: examDates.s3 },
+    { label: "BAC",     sem: 4, date: examDates.bac },
+  ];
+
+  let nextExam = null;
+  let minDays = Infinity;
+
+  for (const exam of exams) {
+    if (!exam.date) continue;
+    const days = daysBetween(today, exam.date);
+    if (days >= 0 && days < minDays) {
+      minDays = days;
+      nextExam = exam;
+    }
+  }
+
+  if (!nextExam) {
+    // all exams passed — use BAC as fallback
+    return { sem: 4, days: 0, label: "BAC انتهى" };
+  }
+
+  return { sem: nextExam.sem, days: minDays, label: nextExam.label };
+}
+
+// ═══ Terms data ═══════════════════════════════════════════════════════════════
+
+const terms = [
+  { id: "bac-his-001", term_ar: "الثورة الفرنسية",    definition: "حركة سياسية واجتماعية اندلعت في فرنسا عام 1789 أطاحت بالنظام الملكي وأسست للجمهورية", chapter: "الثورات الحديثة", unit: 1 },
+  { id: "bac-his-002", term_ar: "الثورة الصناعية",    definition: "تحول اقتصادي كبير بدأ في بريطانيا في القرن 18 أدى إلى التحول من الإنتاج اليدوي إلى الآلي", chapter: "التحولات الاقتصادية", unit: 1 },
+  { id: "bac-his-003", term_ar: "الإمبريالية",         definition: "سياسة توسعية تسعى الدول القوية من خلالها إلى السيطرة على دول أخرى اقتصادياً وسياسياً وعسكرياً", chapter: "السياسة الدولية", unit: 2 },
+  { id: "bac-his-004", term_ar: "الحرب الباردة",       definition: "صراع سياسي وأيديولوجي بين الولايات المتحدة والاتحاد السوفيتي امتد من 1947 إلى 1991", chapter: "العالم بعد الحرب العالمية الثانية", unit: 2 },
+  { id: "bac-his-005", term_ar: "حركة عدم الانحياز",  definition: "تكتل دولي أسسته دول رفضت الانضمام إلى أي من المعسكرين الشرقي أو الغربي إبان الحرب الباردة", chapter: "العالم بعد الحرب العالمية الثانية", unit: 3 },
+];
+
+// ═══ State ════════════════════════════════════════════════════════════════════
+
+let cardStates = {};
+let queue = [];
+let queueIndex = 0;
+let flipped = false;
+let sessionStats = { again: 0, good: 0, easy: 0 };
+let completedIds = new Set();
+let daysUntil = 60;
+let currentSemester = 1;
+let todayDate = new Date();
+let examDates = {};
+
+// ═══ Setup ════════════════════════════════════════════════════════════════════
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  if (root.getAttribute("data-theme") === "summer") {
+    root.removeAttribute("data-theme");
+    btn.textContent = "🌙 Winter";
+    localStorage.setItem("hifz-theme", "winter");
+  } else {
+    root.setAttribute("data-theme", "summer");
+    btn.textContent = "☀️ Summer";
+    localStorage.setItem("hifz-theme", "summer");
+  }
+}
+
+function pad(n) { return String(n).padStart(2, "0"); }
+
+function toDateInput(d) {
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function parseDate(str) {
+  if (!str) return null;
+  const [y,m,d] = str.split("-").map(Number);
+  return new Date(y, m-1, d);
+}
+
+// Default exam dates (Algerian academic year typical schedule)
+window.onload = function() {
+  // Load saved theme
+  const savedTheme = localStorage.getItem("hifz-theme");
+  if (savedTheme === "summer") {
+    document.documentElement.setAttribute("data-theme", "summer");
+    document.getElementById("themeToggle").textContent = "☀️ Summer";
+  }
+
+  const today = new Date();
+  document.getElementById("todayInput").value = toDateInput(today);
+
+  const year = today.getFullYear();
+  document.getElementById("exam1").value   = `${year}-01-15`;
+  document.getElementById("exam2").value   = `${year}-04-10`;
+  document.getElementById("exam3").value   = `${year}-06-01`;
+  document.getElementById("examBac").value = `${year}-06-07`;
+
+  updateTimeline();
+
+  document.getElementById("todayInput").addEventListener("change", updateTimeline);
+  document.getElementById("exam1").addEventListener("change", updateTimeline);
+  document.getElementById("exam2").addEventListener("change", updateTimeline);
+  document.getElementById("exam3").addEventListener("change", updateTimeline);
+  document.getElementById("examBac").addEventListener("change", updateTimeline);
+};
+
+function updateTimeline() {
+  const today = parseDate(document.getElementById("todayInput").value) || new Date();
+  const dates = {
+    s1:  parseDate(document.getElementById("exam1").value),
+    s2:  parseDate(document.getElementById("exam2").value),
+    s3:  parseDate(document.getElementById("exam3").value),
+    bac: parseDate(document.getElementById("examBac").value),
+  };
+
+  const tl = document.getElementById("timeline");
+  const chips = document.getElementById("examChips");
+  tl.style.display = "flex";
+  chips.innerHTML = "";
+
+  const examList = [
+    { label: "ف1",  date: dates.s1 },
+    { label: "ف2",  date: dates.s2 },
+    { label: "ف3",  date: dates.s3 },
+    { label: "BAC 🎓", date: dates.bac },
+  ];
+
+  examList.forEach(ex => {
+    if (!ex.date) return;
+    const days = daysBetween(today, ex.date);
+    const chip = document.createElement("div");
+    chip.className = "exam-chip";
+    if (days < 0) {
+      chip.className += " chip-past";
+      chip.textContent = `${ex.label}: انتهى`;
+    } else if (days <= 14) {
+      chip.className += " chip-critical";
+      chip.textContent = `${ex.label}: ${days} يوم ⚠️`;
+    } else if (days <= 30) {
+      chip.className += " chip-soon";
+      chip.textContent = `${ex.label}: ${days} يوم`;
+    } else {
+      chip.className += " chip-far";
+      chip.textContent = `${ex.label}: ${days} يوم`;
+    }
+    chips.appendChild(chip);
+  });
+}
+
+function startReview() {
+  todayDate = parseDate(document.getElementById("todayInput").value) || new Date();
+  examDates = {
+    s1:  parseDate(document.getElementById("exam1").value),
+    s2:  parseDate(document.getElementById("exam2").value),
+    s3:  parseDate(document.getElementById("exam3").value),
+    bac: parseDate(document.getElementById("examBac").value),
+  };
+
+  const info = detectSemesterAndDays(todayDate, examDates);
+  daysUntil = info.days;
+  currentSemester = info.sem;
+
+  initCards();
+
+  document.getElementById("setupScreen").classList.remove("active");
+  document.getElementById("reviewScreen").classList.add("active");
+
+  const opts = { year: "numeric", month: "long", day: "numeric" };
+  document.getElementById("dateDisplay").textContent =
+    `${todayDate.toLocaleDateString("ar-DZ", opts)} — ${info.days} يوم حتى ${info.label}`;
+
+  if (queue.length === 0) {
+    showNothingDue();
+  } else {
+    render();
+  }
+}
+
+function showNothingDue() {
+  document.getElementById("cardWrap").style.display  = "none";
+  document.getElementById("ratings").style.display   = "none";
+  document.getElementById("queueDots").style.display = "none";
+  document.getElementById("done").style.display      = "flex";
+  document.getElementById("chip-again").textContent  = "";
+  document.getElementById("chip-good").textContent   = "";
+  document.getElementById("chip-easy").textContent   = "";
+  document.getElementById("retention-text").textContent = "";
+
+  // find next due card
+  const nextDates = terms.map(id => cardStates[id]?.dueDate).filter(Boolean).map(d => new Date(d));
+  if (nextDates.length > 0) {
+    const next = new Date(Math.min(...nextDates));
+    const opts = { year: "numeric", month: "long", day: "numeric" };
+    document.getElementById("chip-again").textContent = `لا توجد بطاقات مستحقة اليوم 🎉`;
+    document.getElementById("chip-again").style.background = "rgba(166,227,161,0.15)";
+    document.getElementById("chip-again").style.color = "var(--green)";
+    document.getElementById("retention-text").textContent =
+      `أقرب بطاقة مستحقة: ${next.toLocaleDateString("ar-DZ", opts)}`;
+  }
+}
+
+function goSetup() {
+  document.getElementById("reviewScreen").classList.remove("active");
+  document.getElementById("setupScreen").classList.add("active");
+  document.getElementById("done").style.display = "none";
+  document.getElementById("cardWrap").style.display = "block";
+  document.getElementById("ratings").style.display  = "flex";
+  document.getElementById("queueDots").style.display = "flex";
+  document.getElementById("log").innerHTML = "";
+}
+
+// ═══ Card logic ═══════════════════════════════════════════════════════════════
+
+function saveCardStates() {
+  localStorage.setItem("hifz-cards", JSON.stringify(cardStates));
+}
+
+function loadCardStates() {
+  const saved = localStorage.getItem("hifz-cards");
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    // merge: add new cards from terms, keep existing state
+    terms.forEach(t => {
+      if (!parsed[t.id]) {
+        parsed[t.id] = { id: t.id, interval: 0, streak: 0, cardUnit: t.unit };
+      }
+    });
+    return parsed;
+  }
+  return null;
+}
+
+function resetCardStates() {
+  localStorage.removeItem("hifz-cards");
+  initCards();
+  render();
+}
+
+function initCards(forceReset = false) {
+  const saved = forceReset ? null : loadCardStates();
+
+  if (saved) {
+    cardStates = saved;
+  } else {
+    cardStates = {};
+    terms.forEach(t => {
+      cardStates[t.id] = { id: t.id, interval: 0, streak: 0, dueDate: null, cardUnit: t.unit };
+    });
+  }
+
+  // build queue: only cards in scope for current semester AND due today
+  queue = terms.map(t => t.id).filter(id => {
+    const card = cardStates[id];
+    if (card.cardUnit > currentSemester) return false; // not in scope yet
+    if (!card.dueDate) return true; // new card, always due
+    return new Date(card.dueDate) <= todayDate;
+  });
+
+  queueIndex = 0;
+  flipped = false;
+  sessionStats = { again: 0, good: 0, easy: 0 };
+  completedIds = new Set();
+}
+
+function render() {
+  const cardId = queue[queueIndex];
+  if (!cardId) return;
+
+  const term = terms.find(t => t.id === cardId);
+  const card = cardStates[cardId];
+
+  document.getElementById("term").textContent        = term.term_ar;
+  document.getElementById("chapterDisplay").textContent = term.chapter;
+  document.getElementById("definition").textContent  = term.definition;
+  document.getElementById("unitDisplay").textContent = `وحدة ${term.unit}`;
+  document.getElementById("streakDisplay").textContent = card.streak > 0 ? `🔥 ${card.streak} متتالية` : "";
+  document.getElementById("queuePos").textContent    = queueIndex + 1;
+  document.getElementById("queueTotal").textContent  = queue.length;
+  document.getElementById("remaining").textContent   = queue.length - queueIndex;
+
+  flipped = false;
+  document.getElementById("card").classList.remove("flipped");
+  document.getElementById("ratings").classList.remove("visible");
+
+  updatePressureBar(card);
+  updatePreviews(card);
+  renderDots();
+}
+
+function updatePressureBar(card) {
+  const bar = document.getElementById("pressureBar");
+  const inScope = card.cardUnit <= currentSemester;
+
+  if (!inScope) {
+    bar.className = "pressure-bar pressure-out";
+    bar.textContent = `وحدة ${card.cardUnit} — ليست في نطاق هذا الفصل، لا ضغط`;
+    return;
+  }
+
+  if (daysUntil > 14) {
+    bar.className = "pressure-bar pressure-none";
+    bar.textContent = `✅ ${daysUntil} يوم حتى الامتحان — الفترات تنمو بحرية`;
+  } else if (currentSemester <= 2) {
+    bar.className = "pressure-bar pressure-semester";
+    bar.textContent = `⚠️ امتحان الفصل بعد ${daysUntil} يوم — الفترة مقيدة بـ 5 أيام`;
+  } else {
+    bar.className = "pressure-bar pressure-bac";
+    bar.textContent = `🔴 ${currentSemester === 4 ? "BAC" : "الفصل 3"} بعد ${daysUntil} يوم — الفترة مقيدة بـ 3 أيام!`;
+  }
+}
+
+function updatePreviews(card) {
+  document.getElementById("good-days").textContent =
+    jadwalHifz(card.interval, card.streak, "good", daysUntil, card.cardUnit, currentSemester) + " يوم";
+  document.getElementById("easy-days").textContent =
+    jadwalHifz(card.interval, card.streak, "easy", daysUntil, card.cardUnit, currentSemester) + " يوم";
+}
+
+function renderDots() {
+  const container = document.getElementById("queueDots");
+  container.innerHTML = "";
+
+  // only show each card once — use its LAST position in the queue
+  const lastIdx = {};
+  queue.forEach((id, i) => lastIdx[id] = i);
+
+  queue.forEach((id, i) => {
+    // skip if this is not the last occurrence of this card
+    if (lastIdx[id] !== i) return;
+
+    const dot = document.createElement("div");
+    if (i === queueIndex)          dot.className = "dot current";
+    else if (completedIds.has(id)) dot.className = "dot done";
+    else if (i > queueIndex)       dot.className = "dot requeued"; // red — still pending (requeued)
+    else                           dot.className = "dot";
+    container.appendChild(dot);
+  });
+}
+
+function flipCard() {
+  if (flipped) return;
+  flipped = true;
+  document.getElementById("card").classList.add("flipped");
+  setTimeout(() => document.getElementById("ratings").classList.add("visible"), 280);
+}
+
+function rate(rating) {
+  const cardId = queue[queueIndex];
+  const card = cardStates[cardId];
+  const term = terms.find(t => t.id === cardId);
+
+  reviewCard(card, rating, daysUntil, currentSemester, todayDate);
+  sessionStats[rating]++;
+
+  addLog(term.term_ar, rating, card.interval, card.streak);
+
+  if (rating === "again") {
+    queue.push(cardId); // requeue in session
+  } else {
+    completedIds.add(cardId);
+  }
+
+  saveCardStates();
+
+  queueIndex++;
+
+  if (queueIndex >= queue.length) {
+    showDone();
+  } else {
+    render();
+  }
+}
+
+function addLog(termAr, rating, interval, streak) {
+  const log = document.getElementById("log");
+  const div = document.createElement("div");
+  div.className = "log-entry";
+  const labels = { again: "مجدداً", good: "جيد", easy: "سهل" };
+  const intervalText = interval < 1 ? "في الجلسة" : interval + " يوم";
+  div.innerHTML = `<span class="${rating}">[${labels[rating]}]</span> ${termAr} — التالي: <strong>${intervalText}</strong> | streak: ${streak}`;
+  log.prepend(div);
+}
+
+function showDone() {
+  document.getElementById("cardWrap").style.display  = "none";
+  document.getElementById("ratings").style.display   = "none";
+  document.getElementById("queueDots").style.display = "none";
+
+  const total = sessionStats.again + sessionStats.good + sessionStats.easy;
+  const retention = total > 0 ? Math.round(((total - sessionStats.again) / total) * 100) : 0;
+
+  document.getElementById("chip-again").textContent = `مجدداً: ${sessionStats.again}`;
+  document.getElementById("chip-good").textContent  = `جيد: ${sessionStats.good}`;
+  document.getElementById("chip-easy").textContent  = `سهل: ${sessionStats.easy}`;
+  document.getElementById("retention-text").textContent = `معدل الاحتفاظ: ${retention}%`;
+
+  document.getElementById("done").style.display = "flex";
+}
+
+function restart() {
+  document.getElementById("log").innerHTML = "";
+  document.getElementById("cardWrap").style.display  = "block";
+  document.getElementById("ratings").style.display   = "flex";
+  document.getElementById("queueDots").style.display = "flex";
+  document.getElementById("done").style.display      = "none";
+  initCards(); // keeps saved states, just rebuilds queue
+  render();
+}
+</script>
+</body>
+</html>
